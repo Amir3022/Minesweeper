@@ -119,6 +119,7 @@ Minefield::Minefield(int nMines, int screenWidth, int screenHeight)
 	left = (screenWidth / SpriteCodex::tileSize - width) / 2;
 	top = (screenHeight / SpriteCodex::tileSize - height) / 2;
 	assert(nMines > 0 && nMines < width* height);
+	tilesRemaining = width * height - nMines;
 	std::random_device rd;
 	std::mt19937 rng(rd());
 	std::uniform_int_distribution<int> xDist(left,left+width-1);
@@ -162,7 +163,7 @@ RectI Minefield::GetRect()
 	return RectI(left* SpriteCodex::tileSize, (left + width) * SpriteCodex::tileSize, top* SpriteCodex::tileSize, (top + height) * SpriteCodex::tileSize);
 }
 
-void Minefield::ClickReveal(const Vei2& screenPos)
+bool Minefield::ClickReveal(const Vei2& screenPos)
 {
 	if (!bLost)
 	{
@@ -175,8 +176,17 @@ void Minefield::ClickReveal(const Vei2& screenPos)
 			{
 				bLost = true;
 			}
+			else
+			{
+				tilesRemaining--;
+				if (tilesRemaining == 0)
+				{
+					return true;
+				}
+			}
 		}
 	}
+	return false;
 }
 
 void Minefield::ClickFlag(const Vei2& screenPos)

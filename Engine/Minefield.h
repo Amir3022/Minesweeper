@@ -34,7 +34,7 @@ public:
 	Minefield(int nMines,int screenWidth, int screenHeight);
 	void Draw(Graphics& gfx);
 	RectI GetRect();
-	void ClickReveal(const Vei2& screenPos);
+	bool ClickReveal(const Vei2& screenPos);
 	void ClickFlag(const Vei2& screenPos);
 private:
 	Tile& ToTile(const Vei2& gridPos);
@@ -48,5 +48,5 @@ private:
 	int left;
 	Tile Tiles[width * height];
 	bool bLost = false;
-
+	int tilesRemaining;
 };
