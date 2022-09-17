@@ -95,9 +95,10 @@ RectI Minefield::GetRect()
 void Minefield::ClickReveal(const Vei2& screenPos)
 {
 	Vei2 gridPos = ScreenToGrid(screenPos);
-	if (!ToTile(gridPos).isRevealed())
+	Tile& tile = ToTile(gridPos);
+	if (!tile.isRevealed())
 	{
-		ToTile(gridPos).Reveal();
+		tile.Reveal();
 	}
 }
 
