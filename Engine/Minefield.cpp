@@ -87,6 +87,20 @@ void Minefield::Draw(Graphics& gfx)
 	}
 }
 
+RectI Minefield::GetRect()
+{
+	return RectI(left, left + width * SpriteCodex::tileSize, top, top + height * SpriteCodex::tileSize);
+}
+
+void Minefield::ClickReveal(const Vei2& screenPos)
+{
+	Vei2 gridPos = ScreenToGrid(screenPos);
+	if (!ToTile(gridPos).isRevealed())
+	{
+		ToTile(gridPos).Reveal();
+	}
+}
+
 Minefield::Tile& Minefield::ToTile(const Vei2& gridPos)
 {
 	return Tiles[gridPos.x + gridPos.y * width];
@@ -97,8 +111,8 @@ const Minefield::Tile& Minefield::ToTile(const Vei2& gridPos) const
 	return Tiles[gridPos.x + gridPos.y * width];
 }
 
-RectI Minefield::GetRect()
+Vei2 Minefield::ScreenToGrid(const Vei2& screenPos)
 {
-	return RectI(left, left + width * SpriteCodex::tileSize, top, top + height * SpriteCodex::tileSize);
+	return screenPos / SpriteCodex::tileSize;
 }
 

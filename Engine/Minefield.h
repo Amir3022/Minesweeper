@@ -29,10 +29,12 @@ private:
 public:
 	Minefield(int nMines);
 	void Draw(Graphics& gfx);
+	RectI GetRect();
+	void ClickReveal(const Vei2& screenPos);
 private:
 	Tile& ToTile(const Vei2& gridPos);
-	const Tile& ToTile(const Vei2& gridPos) const;
-	RectI GetRect();
+	const Tile& ToTile(const Vei2& gridPos) const;	
+	Vei2 ScreenToGrid(const Vei2& gridPos);
 private:
 	static constexpr int width = 10;
 	static constexpr int height = 10;
