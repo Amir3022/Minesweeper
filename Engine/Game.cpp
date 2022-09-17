@@ -47,7 +47,7 @@ void Game::UpdateModel()
 			{
 				if (minefield.GetRect().contains(wnd.mouse.GetPos()))
 				{
-					minefield.ClickReveal(wnd.mouse.GetPos());
+					bWon = minefield.ClickReveal(wnd.mouse.GetPos());
 				}
 			}
 			else if (e.GetType() == Mouse::Event::Type::RPress)
