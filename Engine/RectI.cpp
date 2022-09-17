@@ -35,7 +35,7 @@ bool RectI::IsContainedBy( const RectI & other ) const
 
 bool RectI::contains(const Vei2& screenPos)
 {
-	return screenPos.x > left && screenPos.x < right && screenPos.y > top && screenPos.y < bottom;
+	return screenPos.x >= left && screenPos.x < right && screenPos.y >= top && screenPos.y < bottom;
 }
 
 RectI RectI::FromCenter( const Vei2 & center,int halfWidth,int halfHeight )
