@@ -49,7 +49,7 @@ bool Minefield::Tile::isFlagged()
 
 void Minefield::Tile::setNeighborMines(int nMines)
 {
-	assert(nMines > 0 && nMines <= 8);
+	assert(nMines >= 0 && nMines <= 8);
 	if (nNeighborMines == -1)
 	{
 		nNeighborMines = nMines;
@@ -114,13 +114,15 @@ void Minefield::Tile::Draw(const Vei2& screenPos, bool lost, Graphics& gfx)
 
 }
 
-Minefield::Minefield(int nMines)
+Minefield::Minefield(int nMines, int screenWidth, int screenHeight)
 {
+	left = (screenWidth / SpriteCodex::tileSize - width) / 2;
+	top = (screenHeight / SpriteCodex::tileSize - height) / 2;
 	assert(nMines > 0 && nMines < width* height);
 	std::random_device rd;
 	std::mt19937 rng(rd());
-	std::uniform_int_distribution<int> xDist(0,width-1);
-	std::uniform_int_distribution<int> yDist(0,height-1);
+	std::uniform_int_distribution<int> xDist(left,left+width-1);
+	std::uniform_int_distribution<int> yDist(top,top+height-1);
 	bool temp= Tiles[0].hasMine();
 	for (int i = 0; i < nMines; i++)
 	{
@@ -129,17 +131,14 @@ Minefield::Minefield(int nMines)
 		{
 			gridPos = Vei2(xDist(rng), yDist(rng));
 		} while (ToTile(gridPos).hasMine());
-		ToTile({ xDist(rng),yDist(rng) }).SpawnMine();
+		ToTile(gridPos).SpawnMine();
 	}
-	for (Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++)
+	for (Vei2 gridPos = { left, top }; gridPos.y < top+height; gridPos.y++)
 	{
-		for (gridPos.x = 0; gridPos.x < width; gridPos.x++)
+		for (gridPos.x = left; gridPos.x < left+width; gridPos.x++)
 		{
 			int nMines = countNeighborMines(gridPos);
-			if (nMines > 0)
-			{
-				ToTile(gridPos).setNeighborMines(nMines);
-			}
+			ToTile(gridPos).setNeighborMines(nMines);
 		}
 	}
 
@@ -149,9 +148,9 @@ Minefield::Minefield(int nMines)
 void Minefield::Draw(Graphics& gfx)
 {
 	gfx.DrawRect(GetRect(), SpriteCodex::baseColor);
-	for (Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++)
+	for (Vei2 gridPos = { left,top }; gridPos.y < top+height; gridPos.y++)
 	{
-		for (gridPos.x = 0; gridPos.x < width; gridPos.x++)
+		for (gridPos.x = left; gridPos.x < left+width; gridPos.x++)
 		{
 			ToTile(gridPos).Draw(gridPos * SpriteCodex::tileSize, bLost, gfx);
 		}
@@ -160,7 +159,7 @@ void Minefield::Draw(Graphics& gfx)
 
 RectI Minefield::GetRect()
 {
-	return RectI(left, left + width * SpriteCodex::tileSize, top, top + height * SpriteCodex::tileSize);
+	return RectI(left* SpriteCodex::tileSize, (left + width) * SpriteCodex::tileSize, top* SpriteCodex::tileSize, (top + height) * SpriteCodex::tileSize);
 }
 
 void Minefield::ClickReveal(const Vei2& screenPos)
@@ -195,12 +194,12 @@ void Minefield::ClickFlag(const Vei2& screenPos)
 
 Minefield::Tile& Minefield::ToTile(const Vei2& gridPos)
 {
-	return Tiles[gridPos.x + gridPos.y * width];
+	return Tiles[gridPos.x - left + (gridPos.y - top) * width];
 }
 
 const Minefield::Tile& Minefield::ToTile(const Vei2& gridPos) const
 {
-	return Tiles[gridPos.x + gridPos.y * width];
+	return Tiles[gridPos.x - left + (gridPos.y - top) * width];
 }
 
 Vei2 Minefield::ScreenToGrid(const Vei2& screenPos)
@@ -210,10 +209,10 @@ Vei2 Minefield::ScreenToGrid(const Vei2& screenPos)
 
 int Minefield::countNeighborMines(const Vei2& gridPos)
 {
-	int xStart = std::max(0, gridPos.x - 1);
-	int yStart = std::max(0, gridPos.y - 1);
-	int xEnd = std::min(width - 1, gridPos.x + 1);
-	int yEnd = std::min(height - 1, gridPos.y + 1);
+	int xStart = std::max(left, gridPos.x - 1);
+	int yStart = std::max(top, gridPos.y - 1);
+	int xEnd = std::min(left+width - 1, gridPos.x + 1);
+	int yEnd = std::min(top+height - 1, gridPos.y + 1);
 	int counter = 0;
 	for (Vei2 pos = { xStart,yStart }; pos.y <= yEnd; pos.y++)
 	{

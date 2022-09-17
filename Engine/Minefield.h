@@ -31,7 +31,7 @@ private:
 		int nNeighborMines = -1;
 	};
 public:
-	Minefield(int nMines);
+	Minefield(int nMines,int screenWidth, int screenHeight);
 	void Draw(Graphics& gfx);
 	RectI GetRect();
 	void ClickReveal(const Vei2& screenPos);
@@ -42,10 +42,10 @@ private:
 	Vei2 ScreenToGrid(const Vei2& gridPos);
 	int countNeighborMines(const Vei2& gridPos);
 private:
-	static constexpr int width = 10;
-	static constexpr int height = 10;
-	int top = 0;
-	int left = 0;
+	static constexpr int width = 6;
+	static constexpr int height = 4;
+	int top;
+	int left;
 	Tile Tiles[width * height];
 	bool bLost = false;
 
